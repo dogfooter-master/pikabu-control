@@ -1,0 +1,23 @@
+version: "3.7"
+services:
+  pikabu_control:
+    image: flowork/pikabu-control:latest
+    volumes:
+      - type: volume
+        source: pikabu_control_volume
+        target: /var/local
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      resources:
+        limits:
+         cpus: "0.1"
+         memory: 100M
+    networks:
+      - deploy_network
+networks:
+  deploy_network:
+volumes:
+  pikabu_control_volume:
+    external: true

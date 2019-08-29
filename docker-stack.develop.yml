@@ -1,0 +1,20 @@
+version: "3.7"
+services:
+  pikabu_control:
+    image: flowork/pikabu-control-dev:latest
+    volumes:
+      - type: bind
+        source: .
+        target: /go/src/pikabu-control
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      resources:
+        limits:
+         cpus: "1.0"
+         memory: 1000M
+    networks:
+      - develop_network
+networks:
+  develop_network:

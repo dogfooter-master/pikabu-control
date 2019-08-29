@@ -1,0 +1,14 @@
+version: "3.2"
+services:
+  pikabu_control:
+    build:
+      context: .
+      dockerfile: control/Dockerfile
+    restart: always
+    volumes:
+    - .:/go/src/pikabu-control
+    container_name: pikabu_control
+   #ports:
+   #- 8800:8081
+   #- 8801:8082
+    image: flowork/pikabu-control-dev:latest

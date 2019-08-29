@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package pb;
+
+
+
+//The Control service definition.
+service Control {
+ rpc Api  (ApiRequest ) returns (ApiReply );
+ rpc Root (RootRequest) returns (RootReply);
+ rpc File (FileRequest) returns (FileReply);
+}
+
+message ApiRequest {}
+
+message ApiReply {}
+
+message RootRequest {}
+
+message RootReply {}
+
+message FileRequest {}
+
+message FileReply {}
+

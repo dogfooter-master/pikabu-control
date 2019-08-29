@@ -1,0 +1,61 @@
+version: "3.2"
+services:
+  redis:
+    image: redis:4.0.5-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - deploy_network
+      - develop_network
+    volumes:
+      - type: volume
+        source: flowork_redis_volume
+        target: /data
+    ports:
+      - 8082:6379
+  redis_commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+    - REDIS_HOSTS=lazybird.mynetgear.com:flowork_redis:6379
+    ports:
+    - "8083:8081"
+    networks:
+      - deploy_network
+      - develop_network
+  system_mongodb:
+    image: 'mongo:3.6'
+    environment:
+    - MONGO_INITDB_ROOT_USERNAME=admin
+    - MONGO_INITDB_ROOT_PASSWORD=hotice1234
+    - MONGO_INITDB_DATABASE=pikabu
+    volumes:
+      - type: volume
+        source: flowork_system_db_volume
+        target: /data/db
+    ports:
+      - 8087:27017
+    networks:
+      - deploy_network
+      - develop_network
+
+  system_mongodb_express:
+    image: 'mongo-express:latest'
+    environment:
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=hotice1234
+      - ME_CONFIG_OPTIONS_EDITORTHEME=ambiance
+      - ME_CONFIG_MONGODB_SERVER=flowork_system_mongodb
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=hotice1234
+    ports:
+      - 8081:8081
+    networks:
+      - deploy_network
+      - develop_network
+networks:
+  deploy_network:
+  develop_network:
+volumes:
+  flowork_system_db_volume:
+    external: true
+  flowork_redis_volume:
+    external: true

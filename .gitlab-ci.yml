@@ -1,0 +1,34 @@
+variables:
+  PACKAGE_PATH: /go/src/pikabu-control
+  DOCKER_HUB_REGISTRY_PATH: flowork/pikabu-control
+
+stages:
+  - build
+  - deploy
+
+build:
+  tags:
+    - dev
+  only:
+    - master
+  stage: build
+  image: docker:18.09.2
+  services:
+    - docker:dind
+  script:
+    - docker login -u flowork -p Hotice1234!
+    - docker build -t $DOCKER_HUB_REGISTRY_PATH:latest .
+    - docker push $DOCKER_HUB_REGISTRY_PATH:latest
+
+deploy:
+  tags:
+    - dep
+  only:
+    - master
+  dependencies:
+    - build
+  stage: deploy
+  script:
+    - docker login -u flowork -p Hotice1234!
+    - docker pull $DOCKER_HUB_REGISTRY_PATH:latest
+    - docker stack deploy -c docker-stack.deploy.yml flowork
