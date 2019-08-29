@@ -25,7 +25,7 @@ func initializeMongo() (err error) {
 
 	}
 
-	url := "mongodb://" + mgoConfig.Username + ":" + mgoConfig.Password + "@" + mgoConfig.Hosts + "/" + mgoConfig.Database
+	url := "mongodb://" + mgoConfig.Username + ":" + mgoConfig.Password + "@" + mgoConfig.Hosts + "/" + mgoConfig.Database + "?authSource=admin"
 	mgoSession, err = mgo.Dial(url)
 	if err != nil {
 		err = fmt.Errorf("fail to DialWithInfo(%#v) error - %v", info, err)
