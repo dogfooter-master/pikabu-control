@@ -6,4 +6,4 @@ if [ 0 -ne 0 ]; then
 fi
 
 ${EXE} build --no-cache
-docker push dermaster/pikabu-control-dev:latest
+docker push flowork/pikabu-control-dev:latest

@@ -5,5 +5,5 @@ if [ 0 -ne 0 ]; then
 	EXE=${EXE}.exe
 fi
 
-${EXE} build --no-cache -t dermaster/pikabu-control:latest .
-docker push dermaster/pikabu-control:latest
+${EXE} build --no-cache -t flowork/pikabu-control:latest .
+docker push flowork/pikabu-control:latest
