@@ -169,7 +169,7 @@ func (m *Email) SendEmailCertificationNumber() (err error) {
 		sendMail.Attach(m.AttachmentFilePath)
 	}
 
-	sendMail.Embed(os.Getenv("DERMASTER_HOME") + "/dermaster-control/img/dermaster-logo.png")
+	sendMail.Embed(os.Getenv("DERMASTER_HOME") + "/pikabu-control/img/flowork-logo.png")
 
 	port, _ := strconv.Atoi(m.Port)
 	d := gomail.NewDialer(m.SMTPServer, port, m.ID, m.Password)

@@ -16,7 +16,7 @@ type Template struct {
 }
 
 const (
-	homepageUrl = "https://www.dermaster.io"
+	homepageUrl = "https://www.flowork.io"
 )
 
 func (t *Template) Html() (html string) {
@@ -138,7 +138,7 @@ func (t *Template) Html() (html string) {
           <tr>
             <td align="center" valign="top" style="padding: 36px 24px;">
               <a href="` + homepageUrl + `" target="_blank" style="display: inline-block;">
-                <img src="cid:dermaster-logo.png" alt="Logo" border="0" width="48" style="display: block; width: 396px; max-width: 396px; min-width: 396px;">
+                <img src="cid:flowork-logo.png" alt="Logo" border="0" width="48" style="display: block; width: 396px; max-width: 396px; min-width: 396px;">
               </a>
             </td>
           </tr>
