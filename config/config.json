@@ -13,6 +13,7 @@
   "server": {
     "control": {
       "http_hosts": ":8080",
+      "grpc_hosts": ":8081",
       "without_file_server": false
     }
   },

@@ -10,12 +10,12 @@ import (
 
 // ApiRequest collects the request parameters for the Api method.
 type ApiRequest struct {
-	Req service.Payload `json:"req"`
+	Req service.Payload `json:"data"`
 }
 
 // ApiResponse collects the response parameters for the Api method.
 type ApiResponse struct {
-	Res service.Payload `json:"res"`
+	Res service.Payload `json:"data"`
 	Err error           `json:"err"`
 }
 
