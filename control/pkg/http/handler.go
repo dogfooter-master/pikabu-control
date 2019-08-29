@@ -190,5 +190,5 @@ func err2code(err error) int {
 }
 
 type errorWrapper struct {
-	Error string `json:"error"`
+	Error string `json:"err"`
 }
