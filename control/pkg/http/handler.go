@@ -186,7 +186,7 @@ func ErrorDecoder(r *http1.Response) error {
 // This is used to set the http status, see an example here :
 // https://github.com/go-kit/kit/blob/master/examples/addsvc/pkg/addtransport/http.go#L133
 func err2code(err error) int {
-	return http1.StatusInternalServerError
+	return http1.StatusOK
 }
 
 type errorWrapper struct {
