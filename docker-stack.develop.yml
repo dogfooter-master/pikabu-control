@@ -14,6 +14,8 @@ services:
         limits:
          cpus: "1.0"
          memory: 1000M
+    ports:
+      - 9000:8080
     networks:
       - develop_network
 networks:

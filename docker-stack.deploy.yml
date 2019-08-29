@@ -16,6 +16,8 @@ services:
          memory: 100M
     networks:
       - deploy_network
+    ports:
+      - 8080:8080
 networks:
   deploy_network:
 volumes:
