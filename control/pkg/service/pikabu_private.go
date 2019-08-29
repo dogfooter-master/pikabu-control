@@ -2,9 +2,7 @@ package service
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"gopkg.in/mgo.v2/bson"
 )
 
 type PikabuPrivate struct {
@@ -20,6 +18,9 @@ func (s *PikabuPrivate) Service(ctx context.Context, req Payload) (res Payload, 
 		return
 	}
 	switch req.Service {
+	case "GetUserInformation":
+		res, err = s.GetUserInformation(ctx, req, user)
+	/*
 	case "UpdateUserInformation":
 		res, err = s.UpdateUserInformation(ctx, req, user)
 	case "UpdateAccessToken":
@@ -95,6 +96,7 @@ func (s *PikabuPrivate) Service(ctx context.Context, req Payload) (res Payload, 
 	case "GetWebsocketHost":
 		res, err = s.GetWebsocketHost(ctx, req, user)
 	case "SignOut":
+	*/
 
 	default:
 		err = fmt.Errorf("unknown service '%v' in category: '%v'", req.Service, req.Category)
@@ -102,6 +104,25 @@ func (s *PikabuPrivate) Service(ctx context.Context, req Payload) (res Payload, 
 	return
 }
 
+func (s *PikabuPrivate) GetUserInformation(ctx context.Context, req Payload, do UserObject) (res Payload, err error) {
+	uri := do.Avatar.GetFileUri(do.SecretToken.Token)
+	res = Payload{
+		AccessToken:       req.AccessToken,
+		Account:           do.Login.Account,
+		SecretToken:       do.Login.Password,
+		UserId:            do.Id.Hex(),
+		HospitalId:        do.Relation.HospitalId.Hex(),
+		Name:              do.Name,
+		Nickname:          do.Nickname,
+	}
+	if len(uri) > 0 {
+		res.Uri = &UriObject{
+			Avatar: uri,
+		}
+	}
+	return
+}
+/*
 func (s *PikabuPrivate) GetWebsocketHost(ctx context.Context, req Payload, do UserObject) (res Payload, err error) {
 	res = Payload{
 		Host: GetConfigWebsocketHosts(),
@@ -508,3 +529,4 @@ func (s *PikabuPrivate) GetAvatarUri(ctx context.Context, req Payload, do UserOb
 	}
 	return
 }
+*/

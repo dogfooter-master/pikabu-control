@@ -4,9 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
-	"strings"
-	"time"
 )
 
 type PikabuPublic struct {
@@ -16,6 +13,7 @@ func (s *PikabuPublic) Service(ctx context.Context, req Payload) (res Payload, e
 	switch req.Service {
 	case "SignUp":
 		res, err = s.SignUp(ctx, req)
+		/*
 	case "SignUpPassword":
 		res, err = s.SignUpPassword(ctx, req)
 	case "VerifyCertificationCode":
@@ -27,22 +25,79 @@ func (s *PikabuPublic) Service(ctx context.Context, req Payload) (res Payload, e
 	case "SignIn":
 		// TODO: OAuth(우선순위 낮음)
 		res, err = s.SignIn(ctx, req)
-	case "GetPlatform":
-		res, err = s.GetPlatform(ctx, req)
-	case "GetSystemType":
-		res, err = s.GetSystemType(ctx, req)
 	case "GetCertificationCode":
 		res, err = s.GetCertificationCode(ctx, req)
 	case "GetUserStatus":
 		res, err = s.GetUserStatus(ctx, req)
 	case "GetDiskUsage":
 		res, err = s.GetDiskUsage(ctx, req)
+		*/
 	default:
 		err = fmt.Errorf("unknown service '%v' in category: '%v'", req.Service, req.Category)
 	}
 	return
 }
 
+func (s *PikabuPublic) SignUp(ctx context.Context, req Payload) (res Payload, err error) {
+	// TODO: 회원가입 절차
+	// 1. 이메일 입력 -> 이미 가입된 이메일인지 체크
+	// 2. 이메일로 인증 메일 발송(인증 번호) -> 모바일에서는 인증 번호를 입력하는 화면으로 대기 중
+	// -> 웹에서는 인증 번호를 입력하는 화면으로 대기 또는 인증 메일에서 클릭
+	// 3. 인증 메일 클릭하면 성공적으로 인증됐다고 나오면서 패스워드 입력 화면 출력
+	// 4. 이름, 닉네임 입력 화면 출력
+
+	// 로그인 정보 체크
+	if len(req.Account) == 0 {
+		err = errors.New("'account' is mandatory")
+		return
+	}
+	login := LoginObject{
+		Account: req.Account,
+	}
+	if err = login.ValidateAccount(req.Account); err != nil {
+		return
+	}
+	do := UserObject{
+		Login: login,
+	}
+	if ro, err2 := do.Read(); err2 == nil {
+		// TODO: 토큰이 발급한 지 하루가 지났으면 재발급
+		// TODO: 아니라면 'verifying' 에러
+		if ro.Status == "verifying" {
+			err = errors.New("verifying")
+		} else {
+			err = errors.New("duplicated")
+		}
+		return
+	}
+	//// 사용자 정보 체크
+	//if err = do.Validate(); err != nil {
+	//	return
+	//}
+	// 사용자 생성
+	do.Status = "verifying"
+	// 인증 번호 생성
+	do.SecretToken.GenerateCertificationNumber()
+	if err = do.Create(); err != nil {
+		return
+	}
+	// 인증 번호 전송 횟수 초기화
+	do.SecretToken.Count = 0
+	// 이메일 전송
+	email := Email{
+		To:                  do.Login.Account,
+		CertificationNumber: do.SecretToken.Token,
+	}
+	if err = email.SendEmailCertificationNumber(); err != nil {
+		return
+	}
+	res = Payload{
+		Account: do.Login.Account,
+	}
+	return
+}
+
+/*
 func (s *PikabuPublic) GetUserStatus(ctx context.Context, req Payload) (res Payload, err error) {
 	if len(req.Account) == 0 {
 		err = errors.New("'account' is mandatory")
@@ -398,3 +453,4 @@ func (s *PikabuPublic) GetDiskUsage(ctx context.Context, req Payload) (res Paylo
 	}
 	return
 }
+*/

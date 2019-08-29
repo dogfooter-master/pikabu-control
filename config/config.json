@@ -1,13 +1,13 @@
 {
   "db": {
-    "hosts": "pikabu_system_mongodb:27017",
+    "hosts": "flowork_system_mongodb:27017",
     "database": "pikabu",
     "username": "admin",
     "password": "hotice1234",
     "user_collection": "user"
   },
   "redis": {
-    "hosts": "pikabu_redis:6379",
+    "hosts": "flowork_redis:6379",
     "websocket_channel": "ws"
   },
   "server": {
@@ -21,7 +21,7 @@
       "http_hosts": "flowork_pikabu_control:8080"
     },
     "websocket": {
-      "hosts": "wss://www.bugcount.com/ws"
+      "hosts": "ws://lazybird.mynetgear.com:1100/ws"
     }
   },
   "mail": {
