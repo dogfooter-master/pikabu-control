@@ -8,6 +8,7 @@ import (
 	http1 "net/http"
 	"os"
 	endpoint "pikabu-control/control/pkg/endpoint"
+	"pikabu-control/control/pkg/service"
 	"time"
 
 	http "github.com/go-kit/kit/transport/http"
@@ -146,7 +147,8 @@ func decodeFileRequest(_ context.Context, r *http1.Request) (interface{}, error)
 	req := endpoint.FileRequest{
 		Req: f,
 	}
-	return req, err
+	//err := json.NewDecoder(r.Body).Decode(&req)
+	return req, nil
 }
 
 // encodeFileResponse is a transport/http.EncodeResponseFunc that encodes
