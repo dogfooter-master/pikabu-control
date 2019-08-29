@@ -2,7 +2,7 @@ package endpoint
 
 import (
 	"context"
-	"pikabu-web/web/pkg/grpc/pb"
+	"pikabu-control/control/pkg/grpc/pb"
 	service "pikabu-control/control/pkg/service"
 
 	endpoint "github.com/go-kit/kit/endpoint"
