@@ -22,6 +22,7 @@ func initializeMongo() (err error) {
 		Database: mgoConfig.Database,
 		Username: mgoConfig.Username,
 		Password: mgoConfig.Password,
+
 	}
 
 	mgoSession, err = mgo.DialWithInfo(info)

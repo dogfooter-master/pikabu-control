@@ -26,13 +26,10 @@ services:
     environment:
     - MONGO_INITDB_ROOT_USERNAME=admin
     - MONGO_INITDB_ROOT_PASSWORD=hotice1234
-    - MONGO_INITDB_DATABASE=pikabu
     volumes:
       - type: volume
         source: flowork_system_db_volume
         target: /data/db
-    ports:
-      - 9007:27017
     networks:
       - deploy_network
       - develop_network
