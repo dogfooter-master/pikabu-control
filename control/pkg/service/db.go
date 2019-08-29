@@ -22,11 +22,13 @@ func initializeMongo() (err error) {
 		Database: mgoConfig.Database,
 		Username: mgoConfig.Username,
 		Password: mgoConfig.Password,
+		Source: mgoConfig.Database,
 
 	}
 
-	url := "mongodb://" + mgoConfig.Username + ":" + mgoConfig.Password + "@" + mgoConfig.Hosts + "/" + mgoConfig.Database + "?authSource=admin"
-	mgoSession, err = mgo.Dial(url)
+	//url := "mongodb://" + mgoConfig.Username + ":" + mgoConfig.Password + "@" + mgoConfig.Hosts + "/" + mgoConfig.Database + "?authSource=admin"
+	//mgoSession, err = mgo.Dial(url)
+	mgoSession, err = mgo.DialWithInfo(info)
 	if err != nil {
 		err = fmt.Errorf("fail to DialWithInfo(%#v) error - %v", info, err)
 		return
