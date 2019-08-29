@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"pikabu-web/web/pkg/grpc/pb"
+	"pikabu-control/control/pkg/grpc/pb"
 
 	log "github.com/go-kit/kit/log"
 )
