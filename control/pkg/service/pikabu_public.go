@@ -230,10 +230,10 @@ func (s *PikabuPublic) SignUp(ctx context.Context, req Payload) (res Payload, er
 	if ro, err2 := do.Read(); err2 == nil {
 		// TODO: 토큰이 발급한 지 하루가 지났으면 재발급
 		// TODO: 아니라면 'verifying' 에러
-		if ro.Status == "verifying" {
-			err = errors.New("verifying")
-		} else {
+		if ro.Status == "active" {
 			err = errors.New("duplicated")
+		} else {
+			err = errors.New(ro.Status)
 		}
 		return
 	}
