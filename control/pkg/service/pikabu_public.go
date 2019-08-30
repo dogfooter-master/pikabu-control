@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 )
 
 type PikabuPublic struct {
@@ -13,11 +14,11 @@ func (s *PikabuPublic) Service(ctx context.Context, req Payload) (res Payload, e
 	switch req.Service {
 	case "SignUp":
 		res, err = s.SignUp(ctx, req)
+	case "VerifyCertificationCode":
+		res, err = s.VerifyCertificationCode(ctx, req)
 		/*
 	case "SignUpPassword":
 		res, err = s.SignUpPassword(ctx, req)
-	case "VerifyCertificationCode":
-		res, err = s.VerifyCertificationCode(ctx, req)
 	case "ResendCertificationCode":
 		res, err = s.ResendCertificationCode(ctx, req)
 	case "UpdatePassword":
@@ -38,7 +39,55 @@ func (s *PikabuPublic) Service(ctx context.Context, req Payload) (res Payload, e
 	return
 }
 
+func (s *PikabuPublic) VerifyCertificationCode(ctx context.Context, req Payload) (res Payload, err error) {
+	if len(req.Account) == 0 {
+		err = errors.New("'account' is mandatory")
+		return
+	}
+	if len(req.Code) == 0 {
+		err = errors.New("'code' is mandatory")
+		return
+	}
+
+	do := UserObject{
+		Login: LoginObject{
+			Account: req.Account,
+		},
+	}
+	// 계정으로 검색
+	if ro, err2 := do.Read(); err2 != nil {
+		err = fmt.Errorf("%v", err2)
+		return
+	} else {
+		// 계정 status 확인(verifying 이 아니면 에러 발생)
+		if ro.Status != "verifying" {
+			err = errors.New("invalid status")
+			return
+		}
+		// Code 가 맞지않다면 Fail
+		if ro.SecretToken.Token != req.Code {
+			err = errors.New("fail to verify code")
+			return
+		}
+		// Code 유효 기간이 지났다면 Fail
+		if ro.SecretToken.IsExpired() {
+			err = errors.New("expired")
+			return
+		}
+		// status 를 password 상태로 변경
+		do.Id = ro.Id
+		do.Status = "password"
+		if err = do.Update(); err != nil {
+			return
+		}
+		res = Payload{
+			Account: do.Login.Account,
+		}
+	}
+	return
+}
 func (s *PikabuPublic) SignUp(ctx context.Context, req Payload) (res Payload, err error) {
+	TimeTrack(time.Now(), GetFunctionName())
 	// TODO: 회원가입 절차
 	// 1. 이메일 입력 -> 이미 가입된 이메일인지 체크
 	// 2. 이메일로 인증 메일 발송(인증 번호) -> 모바일에서는 인증 번호를 입력하는 화면으로 대기 중
@@ -273,53 +322,6 @@ func (s *PikabuPublic) SignIn(ctx context.Context, req Payload) (res Payload, er
 		}
 	}
 
-	return
-}
-func (s *PikabuPublic) VerifyCertificationCode(ctx context.Context, req Payload) (res Payload, err error) {
-	if len(req.Account) == 0 {
-		err = errors.New("'account' is mandatory")
-		return
-	}
-	if len(req.Code) == 0 {
-		err = errors.New("'code' is mandatory")
-		return
-	}
-
-	do := UserObject{
-		Login: LoginObject{
-			Account: req.Account,
-		},
-	}
-	// 계정으로 검색
-	if ro, err2 := do.Read(); err2 != nil {
-		err = fmt.Errorf("%v", err2)
-		return
-	} else {
-		// 계정 status 확인(verifying 이 아니면 에러 발생)
-		if ro.Status != "verifying" {
-			err = errors.New("invalid status")
-			return
-		}
-		// Code 가 맞지않다면 Fail
-		if ro.SecretToken.Token != req.Code {
-			err = errors.New("fail to verify code")
-			return
-		}
-		// Code 유효 기간이 지났다면 Fail
-		if ro.SecretToken.IsExpired() {
-			err = errors.New("expired")
-			return
-		}
-		// status 를 password 상태로 변경
-		do.Id = ro.Id
-		do.Status = "password"
-		if err = do.Update(); err != nil {
-			return
-		}
-		res = Payload{
-			Account: do.Login.Account,
-		}
-	}
 	return
 }
 func (s *PikabuPublic) ResendCertificationCode(ctx context.Context, req Payload) (res Payload, err error) {
