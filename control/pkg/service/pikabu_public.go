@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
+	"strings"
 	"time"
 )
 
@@ -16,9 +18,9 @@ func (s *PikabuPublic) Service(ctx context.Context, req Payload) (res Payload, e
 		res, err = s.SignUp(ctx, req)
 	case "VerifyCertificationCode":
 		res, err = s.VerifyCertificationCode(ctx, req)
-		/*
 	case "SignUpPassword":
 		res, err = s.SignUpPassword(ctx, req)
+		/*
 	case "ResendCertificationCode":
 		res, err = s.ResendCertificationCode(ctx, req)
 	case "UpdatePassword":
@@ -39,7 +41,123 @@ func (s *PikabuPublic) Service(ctx context.Context, req Payload) (res Payload, e
 	return
 }
 
+func (s *PikabuPublic) SignIn(ctx context.Context, req Payload) (res Payload, err error) {
+	TimeTrack(time.Now(), GetFunctionName())
+	// 로그인 정보 체크
+	if len(req.Account) == 0 {
+		err = errors.New("'account' is mandatory")
+		return
+	}
+	do := UserObject{
+		Login: LoginObject{
+			Account: req.Account,
+		},
+	}
+	// 계정으로 검색
+	if ro, err2 := do.Read(); err2 != nil {
+		err = fmt.Errorf("%v", err2)
+		return
+	} else {
+		// 인증
+		if err = ro.Login.Auth(ro.Id.Hex(), req.Password); err != nil {
+			return
+		}
+		fmt.Fprintf(os.Stderr, "DEBUG: %v\n", ro)
+		if ro.Status == "active" && len(ro.SecretToken.Token) > 0 {
+			do.SecretToken = ro.SecretToken
+		} else {
+			// 인증토큰 발급
+			if err = do.SecretToken.GenerateAccessToken(); err != nil {
+				return
+			}
+		}
+		// 사용자 정보 업데이트
+		do.Id = ro.Id
+		do.Time.Login()
+		if err = do.Update(); err != nil {
+			return
+		}
+		// TODO: 필요한 정보들 더
+		res = Payload{
+			Account:       do.Login.Account,
+			AccessToken:   do.SecretToken.Token,
+			LastLoginTime: ro.Time.LoginTime.Format(time.RFC3339),
+			UserId:        do.Id.Hex(),
+		}
+	}
+
+	return
+}
+func (s *PikabuPublic) UpdatePassword(ctx context.Context, req Payload) (res Payload, err error) {
+	TimeTrack(time.Now(), GetFunctionName())
+	// 인자 체크
+	if len(req.Account) == 0 {
+		err = errors.New("'account' is mandatory")
+		return
+	}
+	// 패스워드 체크
+	if len(req.NewPassword) == 0 {
+		err = errors.New("'new_password' is mandatory")
+		return
+	}
+	do := UserObject{
+		Login: LoginObject{
+			Account: req.Account,
+		},
+	}
+	// account 가 존재하는 지 검색
+	if ro, err2 := do.Read(); err2 != nil {
+		err = fmt.Errorf("%v", err2)
+		return
+	} else {
+		// 패스워드 정합성 체크
+		if ro.Status != "password" {
+			if strings.Compare(req.NewPassword, req.Password) == 0 {
+				err = errors.New("password is invalid")
+				return
+			}
+			if err = ro.Login.Auth(ro.Id.Hex(), req.Password); err != nil {
+				return
+			}
+		}
+		do.Id = ro.Id
+		// 패스워드 유효성 체크
+		if err = do.Login.ValidatePassword(req.NewPassword); err != nil {
+			return
+		}
+		// status 변경
+		if ro.Status == "password" {
+			do.Status = "information"
+		}
+		// 패스워드 업데이트
+		do.Login.EncodePassword(do.Id.Hex(), req.NewPassword)
+		if err = do.Update(); err != nil {
+			return
+		}
+		res = Payload{
+			Account: do.Login.Account,
+		}
+	}
+	return
+}
+func (s *PikabuPublic) SignUpPassword(ctx context.Context, req Payload) (res Payload, err error) {
+	TimeTrack(time.Now(), GetFunctionName())
+	if len(req.Account) == 0 {
+		err = errors.New("'account' is mandatory")
+		return
+	}
+	if len(req.Password) == 0 {
+		err = errors.New("'password' is mandatory")
+		return
+	}
+	req.NewPassword = req.Password
+	if res, err = s.UpdatePassword(ctx, req); err != nil {
+		return
+	}
+	return s.SignIn(ctx, req)
+}
 func (s *PikabuPublic) VerifyCertificationCode(ctx context.Context, req Payload) (res Payload, err error) {
+	TimeTrack(time.Now(), GetFunctionName())
 	if len(req.Account) == 0 {
 		err = errors.New("'account' is mandatory")
 		return
@@ -193,21 +311,6 @@ func (s *PikabuPublic) GetCertificationCode(ctx context.Context, req Payload) (r
 	}
 	return
 }
-func (s *PikabuPublic) SignUpPassword(ctx context.Context, req Payload) (res Payload, err error) {
-	if len(req.Account) == 0 {
-		err = errors.New("'account' is mandatory")
-		return
-	}
-	if len(req.Password) == 0 {
-		err = errors.New("'password' is mandatory")
-		return
-	}
-	req.NewPassword = req.Password
-	if res, err = s.UpdatePassword(ctx, req); err != nil {
-		return
-	}
-	return s.SignIn(ctx, req)
-}
 func (s *PikabuPublic) GetPlatform(ctx context.Context, req Payload) (res Payload, err error) {
 	res = Payload{
 		Platform: envOs,
@@ -278,52 +381,6 @@ func (s *PikabuPublic) SignUp(ctx context.Context, req Payload) (res Payload, er
 	}
 	return
 }
-func (s *PikabuPublic) SignIn(ctx context.Context, req Payload) (res Payload, err error) {
-	// 로그인 정보 체크
-	if len(req.Account) == 0 {
-		err = errors.New("'account' is mandatory")
-		return
-	}
-	do := UserObject{
-		Login: LoginObject{
-			Account: req.Account,
-		},
-	}
-	// 계정으로 검색
-	if ro, err2 := do.Read(); err2 != nil {
-		err = fmt.Errorf("%v", err2)
-		return
-	} else {
-		// 인증
-		if err = ro.Login.Auth(ro.Id.Hex(), req.Password); err != nil {
-			return
-		}
-		fmt.Fprintf(os.Stderr, "DEBUG: %v\n", ro)
-		if ro.Status == "active" && len(ro.SecretToken.Token) > 0 {
-			do.SecretToken = ro.SecretToken
-		} else {
-			// 인증토큰 발급
-			if err = do.SecretToken.GenerateAccessToken(); err != nil {
-				return
-			}
-		}
-		// 사용자 정보 업데이트
-		do.Id = ro.Id
-		do.Time.Login()
-		if err = do.Update(); err != nil {
-			return
-		}
-		// TODO: 필요한 정보들 더
-		res = Payload{
-			Account:       do.Login.Account,
-			AccessToken:   do.SecretToken.Token,
-			LastLoginTime: ro.Time.LoginTime.Format(time.RFC3339),
-			UserId:        do.Id.Hex(),
-		}
-	}
-
-	return
-}
 func (s *PikabuPublic) ResendCertificationCode(ctx context.Context, req Payload) (res Payload, err error) {
 	// 인자 체크
 	if len(req.Account) == 0 {
@@ -378,57 +435,7 @@ func (s *PikabuPublic) ResendCertificationCode(ctx context.Context, req Payload)
 	}
 	return
 }
-func (s *PikabuPublic) UpdatePassword(ctx context.Context, req Payload) (res Payload, err error) {
-	// 인자 체크
-	if len(req.Account) == 0 {
-		err = errors.New("'account' is mandatory")
-		return
-	}
-	// 패스워드 체크
-	if len(req.NewPassword) == 0 {
-		err = errors.New("'new_password' is mandatory")
-		return
-	}
-	do := UserObject{
-		Login: LoginObject{
-			Account: req.Account,
-		},
-	}
-	// account 가 존재하는 지 검색
-	if ro, err2 := do.Read(); err2 != nil {
-		err = fmt.Errorf("%v", err2)
-		return
-	} else {
-		// 패스워드 정합성 체크
-		if ro.Status != "password" {
-			if strings.Compare(req.NewPassword, req.Password) == 0 {
-				err = errors.New("password is invalid")
-				return
-			}
-			if err = ro.Login.Auth(ro.Id.Hex(), req.Password); err != nil {
-				return
-			}
-		}
-		do.Id = ro.Id
-		// 패스워드 유효성 체크
-		if err = do.Login.ValidatePassword(req.NewPassword); err != nil {
-			return
-		}
-		// status 변경
-		if ro.Status == "password" {
-			do.Status = "information"
-		}
-		// 패스워드 업데이트
-		do.Login.EncodePassword(do.Id.Hex(), req.NewPassword)
-		if err = do.Update(); err != nil {
-			return
-		}
-		res = Payload{
-			Account: do.Login.Account,
-		}
-	}
-	return
-}
+
 func (s *PikabuPublic) GetDiskUsage(ctx context.Context, req Payload) (res Payload, err error) {
 	fmt.Fprintf(os.Stdout, "GetDiskUsage\n")
 	if !withoutFileServer {
