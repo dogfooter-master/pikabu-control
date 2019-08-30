@@ -20,9 +20,9 @@ func (s *PikabuPrivate) Service(ctx context.Context, req Payload) (res Payload, 
 	switch req.Service {
 	case "GetUserInformation":
 		res, err = s.GetUserInformation(ctx, req, user)
-	/*
 	case "UpdateUserInformation":
 		res, err = s.UpdateUserInformation(ctx, req, user)
+	/*
 	case "UpdateAccessToken":
 		res, err = s.UpdateAccessToken(ctx, req, user)
 	case "PrepareAvatar":
@@ -104,6 +104,20 @@ func (s *PikabuPrivate) Service(ctx context.Context, req Payload) (res Payload, 
 	return
 }
 
+func (s *PikabuPrivate) UpdateUserInformation(ctx context.Context, req Payload, do UserObject) (res Payload, err error) {
+	do.Nickname = req.Nickname
+
+	if do.Status == "information" {
+		do.Status = "active"
+	}
+	if err = do.Update(); err != nil {
+		return
+	}
+	res = Payload{
+		Account: do.Login.Account,
+	}
+	return
+}
 func (s *PikabuPrivate) GetUserInformation(ctx context.Context, req Payload, do UserObject) (res Payload, err error) {
 	uri := do.Avatar.GetFileUri(do.SecretToken.Token)
 	res = Payload{
@@ -111,8 +125,6 @@ func (s *PikabuPrivate) GetUserInformation(ctx context.Context, req Payload, do 
 		Account:           do.Login.Account,
 		SecretToken:       do.Login.Password,
 		UserId:            do.Id.Hex(),
-		HospitalId:        do.Relation.HospitalId.Hex(),
-		Name:              do.Name,
 		Nickname:          do.Nickname,
 	}
 	if len(uri) > 0 {
@@ -466,26 +478,6 @@ func (s *PikabuPrivate) CreateHospital(ctx context.Context, req Payload, do User
 	}
 	res = Payload{
 		HospitalId: ho.Id.Hex(),
-	}
-	return
-}
-func (s *PikabuPrivate) UpdateUserInformation(ctx context.Context, req Payload, do UserObject) (res Payload, err error) {
-	do.Name = req.Name
-	do.Nickname = req.Nickname
-	if len(req.HospitalId) > 0 && bson.IsObjectIdHex(req.HospitalId) == true {
-		do.Relation.HospitalId = bson.ObjectIdHex(req.HospitalId)
-	}
-	if do.Status == "information" {
-		do.Status = "active"
-	}
-	if err = do.Update(); err != nil {
-		return
-	}
-	res = Payload{
-		Account: do.Login.Account,
-	}
-	if len(req.HospitalId) > 0 {
-		res.HospitalId = req.HospitalId
 	}
 	return
 }
