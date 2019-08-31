@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 	"time"
 )
@@ -61,15 +60,10 @@ func (s *PikabuPublic) SignIn(ctx context.Context, req Payload) (res Payload, er
 		err = fmt.Errorf("%v", err2)
 		return
 	} else {
-		if ro.Status != "active" {
-			err = errors.New(ro.Status)
-			return
-		}
 		// 인증
 		if err = ro.Login.Auth(ro.Id.Hex(), req.Password); err != nil {
 			return
 		}
-		fmt.Fprintf(os.Stderr, "DEBUG: %v\n", ro)
 		if ro.Status == "active" && len(ro.SecretToken.Token) > 0 {
 			do.SecretToken = ro.SecretToken
 		} else {
@@ -90,6 +84,7 @@ func (s *PikabuPublic) SignIn(ctx context.Context, req Payload) (res Payload, er
 			AccessToken:   do.SecretToken.Token,
 			LastLoginTime: ro.Time.LoginTime.Format(time.RFC3339),
 			UserId:        do.Id.Hex(),
+			Status:        do.Status,
 		}
 	}
 
