@@ -20,6 +20,9 @@ func (s *PikabuPublic) Service(ctx context.Context, req Payload) (res Payload, e
 		res, err = s.VerifyCertificationCode(ctx, req)
 	case "SignUpPassword":
 		res, err = s.SignUpPassword(ctx, req)
+	case "SignIn":
+		// TODO: OAuth(우선순위 낮음)
+		res, err = s.SignIn(ctx, req)
 		/*
 	case "ResendCertificationCode":
 		res, err = s.ResendCertificationCode(ctx, req)
