@@ -61,6 +61,9 @@ func (s *PikabuPublic) SignIn(ctx context.Context, req Payload) (res Payload, er
 		err = fmt.Errorf("%v", err2)
 		return
 	} else {
+		if ro.Status != "active" {
+			err = errors.New(ro.Status)
+		}
 		// 인증
 		if err = ro.Login.Auth(ro.Id.Hex(), req.Password); err != nil {
 			return
