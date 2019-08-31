@@ -22,6 +22,8 @@ func (s *PikabuPublic) Service(ctx context.Context, req Payload) (res Payload, e
 	case "SignIn":
 		// TODO: OAuth(우선순위 낮음)
 		res, err = s.SignIn(ctx, req)
+	case "GetUserStatus":
+		res, err = s.GetUserStatus(ctx, req)
 		/*
 	case "ResendCertificationCode":
 		res, err = s.ResendCertificationCode(ctx, req)
@@ -43,6 +45,29 @@ func (s *PikabuPublic) Service(ctx context.Context, req Payload) (res Payload, e
 	return
 }
 
+func (s *PikabuPublic) GetUserStatus(ctx context.Context, req Payload) (res Payload, err error) {
+	if len(req.Account) == 0 {
+		err = errors.New("'account' is mandatory")
+		return
+	}
+
+	do := UserObject{
+		Login: LoginObject{
+			Account: req.Account,
+		},
+	}
+	// 계정으로 검색
+	if ro, err2 := do.Read(); err2 != nil {
+		err = fmt.Errorf("%v", err2)
+		return
+	} else {
+		res = Payload{
+			Account: ro.Login.Account,
+			Status:  ro.Status,
+		}
+	}
+	return
+}
 func (s *PikabuPublic) SignIn(ctx context.Context, req Payload) (res Payload, err error) {
 	TimeTrack(time.Now(), GetFunctionName())
 	// 로그인 정보 체크
@@ -267,29 +292,6 @@ func (s *PikabuPublic) SignUp(ctx context.Context, req Payload) (res Payload, er
 }
 
 /*
-func (s *PikabuPublic) GetUserStatus(ctx context.Context, req Payload) (res Payload, err error) {
-	if len(req.Account) == 0 {
-		err = errors.New("'account' is mandatory")
-		return
-	}
-
-	do := UserObject{
-		Login: LoginObject{
-			Account: req.Account,
-		},
-	}
-	// 계정으로 검색
-	if ro, err2 := do.Read(); err2 != nil {
-		err = fmt.Errorf("%v", err2)
-		return
-	} else {
-		res = Payload{
-			Account: ro.Login.Account,
-			Status:  ro.Status,
-		}
-	}
-	return
-}
 func (s *PikabuPublic) GetCertificationCode(ctx context.Context, req Payload) (res Payload, err error) {
 	if len(req.Account) == 0 {
 		err = errors.New("'account' is mandatory")
