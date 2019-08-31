@@ -121,11 +121,12 @@ func (s *PikabuPrivate) UpdateUserInformation(ctx context.Context, req Payload, 
 func (s *PikabuPrivate) GetUserInformation(ctx context.Context, req Payload, do UserObject) (res Payload, err error) {
 	uri := do.Avatar.GetFileUri(do.SecretToken.Token)
 	res = Payload{
-		AccessToken:       req.AccessToken,
-		Account:           do.Login.Account,
-		SecretToken:       do.Login.Password,
-		UserId:            do.Id.Hex(),
-		Nickname:          do.Nickname,
+		AccessToken: req.AccessToken,
+		Account:     do.Login.Account,
+		SecretToken: do.Login.Password,
+		UserId:      do.Id.Hex(),
+		Nickname:    do.Nickname,
+		Status:      do.Status,
 	}
 	if len(uri) > 0 {
 		res.Uri = &UriObject{
@@ -134,6 +135,7 @@ func (s *PikabuPrivate) GetUserInformation(ctx context.Context, req Payload, do 
 	}
 	return
 }
+
 /*
 func (s *PikabuPrivate) GetWebsocketHost(ctx context.Context, req Payload, do UserObject) (res Payload, err error) {
 	res = Payload{
