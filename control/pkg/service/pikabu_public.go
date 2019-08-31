@@ -63,7 +63,7 @@ func (s *PikabuPublic) SignIn(ctx context.Context, req Payload) (res Payload, er
 	} else {
 		if ro.Status != "active" {
 			err = errors.New(ro.Status)
-			return 
+			return
 		}
 		// 인증
 		if err = ro.Login.Auth(ro.Id.Hex(), req.Password); err != nil {
@@ -129,9 +129,9 @@ func (s *PikabuPublic) UpdatePassword(ctx context.Context, req Payload) (res Pay
 		}
 		do.Id = ro.Id
 		// 패스워드 유효성 체크
-		if err = do.Login.ValidatePassword(req.NewPassword); err != nil {
-			return
-		}
+		//if err = do.Login.ValidatePassword(req.NewPassword); err != nil {
+		//	return
+		//}
 		// status 변경
 		if ro.Status == "password" {
 			do.Status = "information"
