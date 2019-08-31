@@ -30,7 +30,7 @@ func (t *TimeLogObject) Update() {
 
 func TimeTrack(start time.Time, name string) {
 	elapsed := time.Since(start)
-	fmt.Fprintf(os.Stderr, "%s took %v\n", name, elapsed.Nanoseconds() / 1000000)
+	fmt.Fprintf(os.Stderr, "%s took %v\n", name, float64(elapsed.Nanoseconds()) / float64(1000000))
 }
 func GetFunctionName() string {
 	pc := make([]uintptr, 10) // at least 1 entry needed
