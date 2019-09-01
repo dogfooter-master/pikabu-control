@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"time"
 )
 
 type PikabuPrivate struct {
@@ -105,6 +106,7 @@ func (s *PikabuPrivate) Service(ctx context.Context, req Payload) (res Payload, 
 }
 
 func (s *PikabuPrivate) UpdateUserInformation(ctx context.Context, req Payload, do UserObject) (res Payload, err error) {
+	TimeTrack(time.Now(), GetFunctionName())
 	do.Nickname = req.Nickname
 
 	if do.Status == "information" {
@@ -119,6 +121,7 @@ func (s *PikabuPrivate) UpdateUserInformation(ctx context.Context, req Payload, 
 	return
 }
 func (s *PikabuPrivate) GetUserInformation(ctx context.Context, req Payload, do UserObject) (res Payload, err error) {
+	TimeTrack(time.Now(), GetFunctionName())
 	uri := do.Avatar.GetFileUri(do.SecretToken.Token)
 	res = Payload{
 		AccessToken: req.AccessToken,

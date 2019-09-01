@@ -46,6 +46,7 @@ func (s *PikabuPublic) Service(ctx context.Context, req Payload) (res Payload, e
 }
 
 func (s *PikabuPublic) GetUserStatus(ctx context.Context, req Payload) (res Payload, err error) {
+	TimeTrack(time.Now(), GetFunctionName())
 	if len(req.Account) == 0 {
 		err = errors.New("'account' is mandatory")
 		return
