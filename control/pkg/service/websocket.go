@@ -93,6 +93,33 @@ func (c *Client) readPump() {
 		}
 		fmt.Fprintf(os.Stderr, "RECEIVE: %v\n", message.Data.Service)
 		switch message.Data.Service {
+		case "SignIn":
+			p := PikabuPublic{}
+			reply, err := p.SignIn(nil,
+				Payload{
+					Category: "public",
+					Service:  "SignIn",
+					Account:  message.Data.Account,
+					Password: message.Data.Password,
+				})
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "unauthorized\n")
+				return
+			}
+			fmt.Fprintf(os.Stderr, "DEBUG: %v\n", reply.AccessToken)
+			res := WebSocketMessage{
+				Data: Payload{
+					Category:    "ws",
+					Service:     "SignIn",
+					AccessToken: reply.AccessToken,
+				},
+			}
+			message, err := res.Encode()
+			if err != nil {
+				message = []byte(`{ "err" : "` + err.Error() + `" }`)
+			}
+			c.Send <- message
+			continue
 		case "RegisterMate":
 			c.ClientType = message.Data.ClientType
 		case "StartToLive":
