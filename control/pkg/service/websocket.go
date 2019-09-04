@@ -106,12 +106,13 @@ func (c *Client) readPump() {
 				fmt.Fprintf(os.Stderr, "unauthorized\n")
 				return
 			}
-			fmt.Fprintf(os.Stderr, "DEBUG: %v\n", reply.AccessToken)
+			fmt.Fprintf(os.Stderr, "SignIn: %v\n", reply.AccessToken)
 			res := WebSocketMessage{
 				Data: Payload{
 					Category:    "ws",
 					Service:     "SignIn",
 					AccessToken: reply.AccessToken,
+					ClientToken: c.ClientToken,
 				},
 			}
 			message, err := res.Encode()
@@ -321,9 +322,9 @@ func (h *Hub) run() {
 				if c.ClientType == "mate" {
 					// 상대방에게 접속 종료되었음을 전송한다.
 					topic := TopicObject{
-						Service:             "UnableToLive",
-						ClientToken:         c.ClientToken,
-						LiveId:              c.LiveId,
+						Service:     "UnableToLive",
+						ClientToken: c.ClientToken,
+						LiveId:      c.LiveId,
 					}
 					if err := topic.Publish(); err != nil {
 						fmt.Fprintf(os.Stderr, "fail to topic.Publish: %v\n", err)
