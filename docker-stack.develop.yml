@@ -7,8 +7,8 @@ services:
         source: .
         target: /go/src/pikabu-control
       - type: bind
-      source: /home/wonsuck_song/wordpress/wp-content
-      target: /go/src/frontend
+        source: /home/wonsuck_song/wordpress/wp-content
+        target: /frontend
     deploy:
       replicas: 1
       restart_policy:
