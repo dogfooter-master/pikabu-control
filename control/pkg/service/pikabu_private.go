@@ -110,8 +110,17 @@ func (s *PikabuPrivate) Service(ctx context.Context, req Payload) (res Payload, 
 func (s *PikabuPrivate) GetActiveAgentList(ctx context.Context, req Payload, do UserObject) (res Payload, err error) {
 	TimeTrack(time.Now(), GetFunctionName())
 
+	clientList := WebSocketHub.GetAgentList(do.Id)
 	res = Payload{
 		Account: do.Login.Account,
+	}
+	for _, e := range clientList {
+		res.AgentList = append(res.AgentList,
+			AgentObject{
+				ClientToken: e.ClientToken,
+				Status: "active",
+				Name: e.ClientName,
+			})
 	}
 	return
 }

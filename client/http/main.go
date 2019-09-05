@@ -61,6 +61,7 @@ func main() {
 	services = append(services, "UpdateAccessToken")
 	services = append(services, "PrepareAvatar")
 	services = append(services, "GetAvatarUri")
+	services = append(services, "GetActiveAgentList")
 
 	services = append(services, "MakeTestCase")
 
@@ -121,6 +122,8 @@ func main() {
 			PrepareAvatar()
 		case "GetAvatarUri":
 			GetAvatarUri()
+		case "GetActiveAgentList":
+			GetActiveAgentList()
 
 		case "MakeTestCase":
 			MakeTestCase()
@@ -134,6 +137,51 @@ func main() {
 		}
 		fmt.Fprintf(os.Stderr, "\n")
 	}
+}
+
+
+func GetActiveAgentList () {
+	if len(tokens) < 2 {
+		fmt.Fprintf(os.Stderr, "%s:<service> <access_token>\n", GetFunctionName())
+		return
+	}
+
+	message := service.Payload{
+		Category: "private",
+		Service: "GetActiveAgentList",
+		AccessToken: tokens[1],
+	}
+	request := endpoint.ApiRequest{
+		Req: message,
+	}
+	b, _ := json.Marshal(request)
+	body := bytes.NewBuffer(b)
+
+	request.Req.Debug("> " + GetFunctionName() + " Request")
+	defer timeTrack(time.Now(), GetFunctionName())
+	req, err := http.NewRequest("POST", scheme, body)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	var respBody Response
+	if err := json.NewDecoder(resp.Body).Decode(&respBody); err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return
+	}
+	respBody.Debug("< " + GetFunctionName() + " Response")
+	fmt.Fprintf(os.Stderr, "Result: %v\n", respBody.Data.Count)
+	return
+
+	return
 }
 
 func GetImages () {

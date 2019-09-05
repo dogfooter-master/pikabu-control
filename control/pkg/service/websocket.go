@@ -43,6 +43,7 @@ type Client struct {
 	ClientToken string
 	LiveId      string
 	ClientType  string
+	ClientName  string
 	Conn        *websocket.Conn
 	User        UserObject
 	Send        chan []byte
@@ -125,6 +126,7 @@ func (c *Client) readPump() {
 		//	c.ClientType = message.Data.ClientType
 		case "Register":
 			c.ClientType = message.Data.ClientType
+			c.ClientName = message.Data.Name
 		case "StartToLive":
 			WebSocketHub.GenerateLiveId(c.ClientToken)
 		case "UpdateAccessToken":
@@ -384,7 +386,7 @@ func (h *Hub) BroadcastToPikabu(userId bson.ObjectId, res WebSocketMessage) {
 		}
 	}
 }
-func (h *Hub) GetAgentList(userId bson.ObjectId) (clientList []*Client){
+func (h *Hub) GetAgentList(userId bson.ObjectId) (clientList []*Client) {
 	for _, v := range h.Clients {
 		if v.ClientType == "agent" {
 			if v.User.Id == userId {
