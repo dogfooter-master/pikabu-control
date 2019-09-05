@@ -23,8 +23,8 @@ func (s *PikabuPrivate) Service(ctx context.Context, req Payload) (res Payload, 
 		res, err = s.GetUserInformation(ctx, req, user)
 	case "UpdateUserInformation":
 		res, err = s.UpdateUserInformation(ctx, req, user)
-	case "GetActiveAgentList":
-		res, err = s.GetActiveAgentList(ctx, req, user)
+	case "GetAgentList":
+		res, err = s.GetAgentList(ctx, req, user)
 	/*
 	case "UpdateAccessToken":
 		res, err = s.UpdateAccessToken(ctx, req, user)
@@ -107,7 +107,7 @@ func (s *PikabuPrivate) Service(ctx context.Context, req Payload) (res Payload, 
 	return
 }
 
-func (s *PikabuPrivate) GetActiveAgentList(ctx context.Context, req Payload, do UserObject) (res Payload, err error) {
+func (s *PikabuPrivate) GetAgentList(ctx context.Context, req Payload, do UserObject) (res Payload, err error) {
 	TimeTrack(time.Now(), GetFunctionName())
 
 	clientList := WebSocketHub.GetAgentList(do.Id)

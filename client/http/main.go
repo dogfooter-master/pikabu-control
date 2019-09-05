@@ -61,7 +61,7 @@ func main() {
 	services = append(services, "UpdateAccessToken")
 	services = append(services, "PrepareAvatar")
 	services = append(services, "GetAvatarUri")
-	services = append(services, "GetActiveAgentList")
+	services = append(services, "GetAgentList")
 
 	services = append(services, "MakeTestCase")
 
@@ -122,8 +122,8 @@ func main() {
 			PrepareAvatar()
 		case "GetAvatarUri":
 			GetAvatarUri()
-		case "GetActiveAgentList":
-			GetActiveAgentList()
+		case "GetAgentList":
+			GetAgentList()
 
 		case "MakeTestCase":
 			MakeTestCase()
@@ -140,7 +140,7 @@ func main() {
 }
 
 
-func GetActiveAgentList () {
+func GetAgentList () {
 	if len(tokens) < 2 {
 		fmt.Fprintf(os.Stderr, "%s:<service> <access_token>\n", GetFunctionName())
 		return
@@ -148,7 +148,7 @@ func GetActiveAgentList () {
 
 	message := service.Payload{
 		Category: "private",
-		Service: "GetActiveAgentList",
+		Service: "GetAgentList",
 		AccessToken: tokens[1],
 	}
 	request := endpoint.ApiRequest{
