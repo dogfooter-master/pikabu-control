@@ -228,12 +228,11 @@ func (t *TopicObject) Process() {
 		fmt.Fprintf(os.Stderr, "DEBUG: Offer %v %v -> %v\n", t.Account, t.ClientToken, t.OpponentClientToken)
 		rs := WebSocketMessage{
 			Data: Payload{
-				Category:            "ws",
-				Service:             "Offer",
-				Sdp:                 t.Sdp,
-				ClientToken:         t.ClientToken,
-				OpponentClientToken: t.OpponentClientToken,
-				LiveId:              t.LiveId,
+				Category:    "ws",
+				Service:     "Offer",
+				Sdp:         t.Sdp,
+				ClientToken: t.ClientToken,
+				LiveId:      t.LiveId,
 			},
 		}
 		WebSocketHub.SendToOpponent(t.OpponentClientToken, rs)
