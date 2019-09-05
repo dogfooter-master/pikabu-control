@@ -93,7 +93,7 @@ func (t *TopicObject) Subscribe() {
 			for {
 				switch v := psc.Receive().(type) {
 				case redis.Message:
-					//fmt.Fprintf(os.Stderr, "%s: message: %s\n", v.Channel, v.Data)
+					fmt.Fprintf(os.Stderr, "%s: message: %s\n", v.Channel, v.Data)
 					result := TopicObject{}
 					result.Decode(v.Data)
 					result.Process()
