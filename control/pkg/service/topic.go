@@ -12,6 +12,7 @@ type TopicObject struct {
 	Id                  bson.ObjectId          `json:"_id,omitempty"`
 	UserId              bson.ObjectId          `json:"user,omitempty"`
 	ClientToken         string                 `json:"client_token,omitempty"`
+	ClientType          string                 `json:"client_type,omitempty"`
 	LiveId              string                 `json:"live_id,omitempty"`
 	MateToken           string                 `json:"mate_token,omitempty"`
 	OpponentClientToken string                 `json:"opponent_client_token,omitempty"`
@@ -92,7 +93,7 @@ func (t *TopicObject) Subscribe() {
 			for {
 				switch v := psc.Receive().(type) {
 				case redis.Message:
-					fmt.Fprintf(os.Stderr, "%s: message: %s\n", v.Channel, v.Data)
+					//fmt.Fprintf(os.Stderr, "%s: message: %s\n", v.Channel, v.Data)
 					result := TopicObject{}
 					result.Decode(v.Data)
 					result.Process()

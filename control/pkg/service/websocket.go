@@ -163,6 +163,7 @@ func (c *Client) readPump() {
 			Account:             c.User.Login.Account,
 			RemoteAddr:          c.Conn.RemoteAddr().String(),
 			ClientToken:         c.ClientToken,
+			ClientType:          c.ClientType,
 			LiveId:              c.LiveId,
 			MateToken:           message.Data.MateToken,
 			Sdp:                 message.Data.Sdp,
@@ -387,7 +388,6 @@ func (h *Hub) BroadcastToPikabu(userId bson.ObjectId, res WebSocketMessage) {
 }
 func (h *Hub) GetAgentList(userId bson.ObjectId) (clientList []*Client) {
 	for _, v := range h.Clients {
-		fmt.Fprintf(os.Stderr, "GenAgentList DEBUG: %#v\n", v)
 		if v.ClientType == "agent" {
 			if v.User.Id == userId {
 				clientList = append(clientList, v)
