@@ -372,11 +372,10 @@ func (h *Hub) Broadcast(message []byte) {
 }
 func (h *Hub) BroadcastToPikabu(userId bson.ObjectId, res WebSocketMessage) {
 	for _, v := range h.Clients {
-		fmt.Fprintf(os.Stderr, "BroadcastToPikabu - DEBUG: UserId(%v) - UserId(%v)\n", v.User.Id.Hex(), userId.Hex())
-		// 나 자신은 제외
-		if v.ClientType == "agent" {
+		if v.ClientToken == res.Data.OpponentClientToken {
 			continue
 		}
+		fmt.Fprintf(os.Stderr, "Broadcast UserId(%v) %v:%v\n", v.User.Login.Account, v.ClientName, v.ClientType)
 		if v.User.Id == userId {
 			message, err := res.Encode()
 			if err != nil {
