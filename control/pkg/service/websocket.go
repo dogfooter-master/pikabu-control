@@ -388,6 +388,7 @@ func (h *Hub) BroadcastToPikabu(userId bson.ObjectId, res WebSocketMessage) {
 }
 func (h *Hub) GetAgentList(userId bson.ObjectId) (clientList []*Client) {
 	for _, v := range h.Clients {
+		fmt.Fprintf(os.Stderr, "GenAgentList DEBUG: %#v\n", v)
 		if v.ClientType == "agent" {
 			if v.User.Id == userId {
 				clientList = append(clientList, v)
