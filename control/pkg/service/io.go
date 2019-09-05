@@ -89,6 +89,7 @@ type Payload struct {
 	Host                string                      `json:"host,omitempty"`
 	LiveId              string                      `json:"live_id,omitempty"`
 	Three               *ThreeObject                `json:"three,omitempty"`
+	AgentList           []AgentObject               `json:"agent_list,omitempty"`
 }
 
 func (p *Payload) Debug(prefix string) {
@@ -235,4 +236,10 @@ type DiskUsageObject struct {
 	Used        uint64  `json:"used,omitempty"`
 	Available   uint64  `json:"available,omitempty"`
 	UsedPercent float64 `json:"used_percent,omitempty"`
+}
+
+type AgentObject struct {
+	Name        string `json:"name,omitempty"`
+	ClientToken string `json:"client_token,omitempty"`
+	Status      string `json:"status,omitempty"`
 }

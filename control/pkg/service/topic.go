@@ -165,17 +165,26 @@ func (t *TopicObject) Publish() (err error) {
 func (t *TopicObject) Process() {
 	switch t.Service {
 	case "Register":
-		// 웹에서 접속했음
-		WebSocketHub.CloseExceptMyAddr(t.ClientToken, t.AccessToken)
+		// 클라이언트가 접속했음
+		// WebSocketHub.CloseExceptMyAddr(t.ClientToken, t.AccessToken)
 		rs := WebSocketMessage{
 			Data: Payload{
 				Category:    "ws",
-				Service:     "Register",
+				Service:     "RegisterComplete",
 				Account:     t.Account,
 				ClientToken: t.ClientToken,
 			},
 		}
 		WebSocketHub.SendToClient(t.ClientToken, rs)
+		rs = WebSocketMessage{
+			Data: Payload{
+				Category:            "ws",
+				Service:             "ReadyToLive",
+				Account:             t.Account,
+				OpponentClientToken: t.ClientToken,
+			},
+		}
+		WebSocketHub.BroadcastToPikabu(t.UserId, rs)
 	case "Unregister":
 	case "SignInMate":
 		rs := WebSocketMessage{
@@ -187,18 +196,18 @@ func (t *TopicObject) Process() {
 		}
 		fmt.Fprintf(os.Stderr, "DEBUG: SignInMate %v\n", t.ClientToken)
 		WebSocketHub.SendToClient(t.ClientToken, rs)
-	case "RegisterMate":
-		// 더메이트가 접속했다.
-		// 동일한 계정으로 접속된 모든 웹에 알림
-		rs := WebSocketMessage{
-			Data: Payload{
-				Category:            "ws",
-				Service:             "ReadyToLive",
-				Account:             t.Account,
-				OpponentClientToken: t.ClientToken,
-			},
-		}
-		WebSocketHub.BroadcastToPikabu(t.UserId, rs)
+	//case "RegisterAgent":
+	//	// 더메이트가 접속했다.
+	//	// 동일한 계정으로 접속된 모든 웹에 알림
+	//	rs := WebSocketMessage{
+	//		Data: Payload{
+	//			Category:            "ws",
+	//			Service:             "ReadyToLive",
+	//			Account:             t.Account,
+	//			OpponentClientToken: t.ClientToken,
+	//		},
+	//	}
+	//	WebSocketHub.BroadcastToPikabu(t.UserId, rs)
 	case "GetMate":
 		// 현재 접속한 더메이트 정보를 요청한다.
 	case "StartToLive":

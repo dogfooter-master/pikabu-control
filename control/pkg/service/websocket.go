@@ -121,7 +121,9 @@ func (c *Client) readPump() {
 			}
 			c.Send <- message
 			continue
-		case "RegisterMate":
+		//case "RegisterMate":
+		//	c.ClientType = message.Data.ClientType
+		case "Register":
 			c.ClientType = message.Data.ClientType
 		case "StartToLive":
 			WebSocketHub.GenerateLiveId(c.ClientToken)
@@ -330,7 +332,7 @@ func (h *Hub) run() {
 						fmt.Fprintf(os.Stderr, "fail to topic.Publish: %v\n", err)
 					}
 					// 접속 종료한 것이 mate 라면, 해당 유저의 mate가 남아있는 지 체크하고 없으면 Live 못한다고 보낸다.
-					//if WebSocketHub.HasMate(c.User.Id) == false {
+					//if WebSocketHub.HasAgent(c.User.Id) == false {
 					//	rs := WebSocketMessage{
 					//		Data: Payload{
 					//			Category: "ws",
@@ -370,7 +372,7 @@ func (h *Hub) BroadcastToPikabu(userId bson.ObjectId, res WebSocketMessage) {
 	for _, v := range h.Clients {
 		fmt.Fprintf(os.Stderr, "BroadcastToPikabu - DEBUG: UserId(%v) - UserId(%v)\n", v.User.Id.Hex(), userId.Hex())
 		// 나 자신은 제외
-		if v.ClientType == "mate" {
+		if v.ClientType == "agent" {
 			continue
 		}
 		if v.User.Id == userId {
@@ -382,9 +384,19 @@ func (h *Hub) BroadcastToPikabu(userId bson.ObjectId, res WebSocketMessage) {
 		}
 	}
 }
-func (h *Hub) HasMate(userId bson.ObjectId) bool {
+func (h *Hub) GetAgentList(userId bson.ObjectId) (clientList []*Client){
 	for _, v := range h.Clients {
-		if v.ClientType == "mate" && v.User.Id == userId {
+		if v.ClientType == "agent" {
+			if v.User.Id == userId {
+				clientList = append(clientList, v)
+			}
+		}
+	}
+	return
+}
+func (h *Hub) HasAgent(userId bson.ObjectId) bool {
+	for _, v := range h.Clients {
+		if v.ClientType == "agent" && v.User.Id == userId {
 			return true
 		}
 	}
