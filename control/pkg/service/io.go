@@ -90,6 +90,7 @@ type Payload struct {
 	LiveId              string                      `json:"live_id,omitempty"`
 	Three               *ThreeObject                `json:"three,omitempty"`
 	AgentList           []AgentObject               `json:"agent_list,omitempty"`
+	ChannelType         string                      `json:"channel_type,omitempty"`
 }
 
 func (p *Payload) Debug(prefix string) {

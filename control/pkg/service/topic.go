@@ -13,6 +13,7 @@ type TopicObject struct {
 	UserId              bson.ObjectId          `json:"user,omitempty"`
 	ClientToken         string                 `json:"client_token,omitempty"`
 	ClientType          string                 `json:"client_type,omitempty"`
+	ChannelType         string                 `json:"channel_type,omitempty"`
 	LiveId              string                 `json:"live_id,omitempty"`
 	MateToken           string                 `json:"mate_token,omitempty"`
 	OpponentClientToken string                 `json:"opponent_client_token,omitempty"`
@@ -231,6 +232,7 @@ func (t *TopicObject) Process() {
 				Category:    "ws",
 				Service:     "Offer",
 				Sdp:         t.Sdp,
+				ChannelType: t.ChannelType,
 				ClientToken: t.ClientToken,
 				LiveId:      t.LiveId,
 			},
@@ -245,6 +247,7 @@ func (t *TopicObject) Process() {
 				Candidate:           t.Candidate,
 				Sdp:                 t.Sdp,
 				ClientToken:         t.ClientToken,
+				ChannelType:         t.ChannelType,
 				OpponentClientToken: t.OpponentClientToken,
 			},
 		}
@@ -257,6 +260,7 @@ func (t *TopicObject) Process() {
 				Service:             "Candidate",
 				Candidate:           t.Candidate,
 				ClientToken:         t.ClientToken,
+				ChannelType:         t.ChannelType,
 				OpponentClientToken: t.OpponentClientToken,
 			},
 		}

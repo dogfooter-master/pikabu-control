@@ -164,6 +164,7 @@ func (c *Client) readPump() {
 			RemoteAddr:          c.Conn.RemoteAddr().String(),
 			ClientToken:         c.ClientToken,
 			ClientType:          c.ClientType,
+			ChannelType:         message.Data.ChannelType,
 			LiveId:              c.LiveId,
 			MateToken:           message.Data.MateToken,
 			Sdp:                 message.Data.Sdp,
