@@ -62,7 +62,7 @@ type WebSocketMessage struct {
 }
 
 func (w *WebSocketMessage) Encode() (b []byte, err error) {
-	b, err = json.MarshalIndent(w, "", " ")
+	b, err = json.Marshal(w)
 	if err != nil {
 		return
 	}
