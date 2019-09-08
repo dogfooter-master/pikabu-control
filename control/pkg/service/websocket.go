@@ -165,6 +165,7 @@ func (c *Client) readPump() {
 			ClientToken:         c.ClientToken,
 			ClientType:          c.ClientType,
 			ChannelType:         message.Data.ChannelType,
+			Label:               message.Data.Label,
 			LiveId:              c.LiveId,
 			MateToken:           message.Data.MateToken,
 			Sdp:                 message.Data.Sdp,

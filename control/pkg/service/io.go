@@ -11,6 +11,7 @@ import (
 type Payload struct {
 	Category            string                      `json:"category,omitempty"`
 	Service             string                      `json:"service,omitempty"`
+	Label               string                      `json:"label,omitempty"`
 	Token               string                      `json:"token,omitempty"`
 	AccessToken         string                      `json:"access_token,omitempty"`
 	AccessCode          string                      `json:"access_code,omitempty"`
@@ -126,7 +127,6 @@ type PatientObject struct {
 	FirstName               string            `json:"first_name,omitempty"`
 	MiddleName              string            `json:"middle_name,omitempty"`
 	LastName                string            `json:"last_name,omitempty"`
-	Label                   string            `json:"label,omitempty"`
 	Name                    string            `json:"name,omitempty"`
 	Address                 string            `json:"address,omitempty"`
 	Country                 string            `json:"country,omitempty"`

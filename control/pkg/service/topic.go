@@ -234,6 +234,7 @@ func (t *TopicObject) Process() {
 				Service:     "Offer",
 				Sdp:         t.Sdp,
 				ChannelType: t.ChannelType,
+				Label:       t.Label,
 				ClientToken: t.ClientToken,
 				LiveId:      t.LiveId,
 			},
@@ -249,6 +250,7 @@ func (t *TopicObject) Process() {
 				Sdp:                 t.Sdp,
 				ClientToken:         t.ClientToken,
 				ChannelType:         t.ChannelType,
+				Label:               t.Label,
 				OpponentClientToken: t.OpponentClientToken,
 			},
 		}
@@ -262,6 +264,7 @@ func (t *TopicObject) Process() {
 				Candidate:           t.Candidate,
 				ClientToken:         t.ClientToken,
 				ChannelType:         t.ChannelType,
+				Label:               t.Label,
 				OpponentClientToken: t.OpponentClientToken,
 			},
 		}
