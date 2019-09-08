@@ -126,6 +126,7 @@ type PatientObject struct {
 	FirstName               string            `json:"first_name,omitempty"`
 	MiddleName              string            `json:"middle_name,omitempty"`
 	LastName                string            `json:"last_name,omitempty"`
+	Label                   string            `json:"label,omitempty"`
 	Name                    string            `json:"name,omitempty"`
 	Address                 string            `json:"address,omitempty"`
 	Country                 string            `json:"country,omitempty"`

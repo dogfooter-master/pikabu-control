@@ -14,6 +14,7 @@ type TopicObject struct {
 	ClientToken         string                 `json:"client_token,omitempty"`
 	ClientType          string                 `json:"client_type,omitempty"`
 	ChannelType         string                 `json:"channel_type,omitempty"`
+	Label               string                 `json:"label,omitempty"`
 	LiveId              string                 `json:"live_id,omitempty"`
 	MateToken           string                 `json:"mate_token,omitempty"`
 	OpponentClientToken string                 `json:"opponent_client_token,omitempty"`
