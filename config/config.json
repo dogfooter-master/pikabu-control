@@ -6,6 +6,12 @@
     "password": "hotice1234",
     "user_collection": "user"
   },
+  "mysql": {
+    "hosts": "flowork_wordpress_db:3306",
+    "database": "floworkdb",
+    "username": "flowork",
+    "password": "Hotice1234!"
+  },
   "redis": {
     "hosts": "flowork_redis:6379",
     "websocket_channel": "ws"
@@ -22,7 +28,7 @@
       "http_hosts": "flowork_pikabu_control:8080"
     },
     "websocket": {
-      "hosts": "ws://lazybird.mynetgear.com:1100/ws"
+      "hosts": "wss://flowork.ai/ws"
     }
   },
   "mail": {
@@ -30,7 +36,7 @@
     "port": "25",
     "id": "lazysupport",
     "password": "wssong98",
-    "from": "lazysupport@dermaster.io",
-    "support": "lazysupport@dermaster.io"
+    "from": "flowork-admin@flowork.ai",
+    "support": "flowork-admin@flowork.ai"
   }
 }
